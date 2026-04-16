@@ -22,3 +22,11 @@ Thumbs.db
 # Claude Code
 skills-lock.json
 DESAFIO.md
+.agents/
+.claude/
+frontend/AGENTS.md
+frontend/CLAUDE.md
+
+# Lock files raiz (não fazem parte do projeto)
+/package.json
+/package-lock.json
