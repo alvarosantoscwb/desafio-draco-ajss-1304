@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model user {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+
+}
+model communication {
+  id                Int         @id
+  hash              String      @unique
+  courtAcronym      String      @map("court_acronym")
+  organName         String      @map("organ_name")
+  communicationType String      @map("communication_type")
+  documentType      String?     @map("document_type")
+  className         String?     @map("class_name")
+  processNumber     String      @map("process_number")
+  processNumberMask String      @map("process_number_mask")
+  content           String
+  medium            String
+  mediumFull        String      @map("medium_full")
+  link              String?
+  status            String
+  availableAt       DateTime    @map("available_at")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  recipients        recipient[]
+
+  @@map("communication")
+  @@index([processNumber])
+  @@index([availableAt])
+  @@index([courtAcronym])
+}
+
+model recipient {
+  id              Int           @id @default(autoincrement())
+  communicationId Int           @map("communication_id")
+  name            String
+  pole            String?
+  isLawyer        Boolean       @map("is_lawyer")
+  oabNumber       String?       @map("oab_number")
+  oabState        String?       @map("oab_state")
+  communication   communication @relation(fields: [communicationId], references: [id])
+
+  @@map("recipient")
+}
+
+model syncLog {
+  id         Int      @id @default(autoincrement())
+  executedAt DateTime @default(now()) @map("executed_at")
+  status     String
+  count      Int      @default(0)
+  error      String?
+
+  @@map("sync_log")
+}
