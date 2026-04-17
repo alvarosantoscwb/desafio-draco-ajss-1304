@@ -28,7 +28,7 @@ export default function LoginPage() {
 		try {
 			const { token } = await login(data);
 			localStorage.setItem("token", token);
-			router.push("/comunicacoes");
+			router.push("/communications");
 		} catch (err) {
 			setServerError(err instanceof Error ? err.message : "Erro inesperado");
 		}
@@ -47,7 +47,7 @@ export default function LoginPage() {
 						priority
 					/>
 					<div className="absolute inset-0 flex flex-col items-start justify-start p-8">
-						{/* <Image
+						<Image
 							src="/logo.png"
 							alt="JusCash Logo"
 							width={199}
@@ -57,7 +57,7 @@ export default function LoginPage() {
 						/>
 						<p className="mt-3 text-white">
 							Antecipe honorários advocatícios com a JusCash
-						</p> */}
+						</p>
 					</div>
 				</div>
 			</div>

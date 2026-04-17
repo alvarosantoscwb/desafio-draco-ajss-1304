@@ -1,6 +1,9 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import 'dotenv/config';
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter } as never);
 const BASE_URL = 'https://comunicaapi.pje.jus.br/api/v1';
 const ITEMS_PER_PAGE = 100;
 
@@ -123,11 +126,58 @@ async function upsertCommunication(item: PjeItem) {
   });
 }
 
+async function seedTestProcess() {
+  const processNumber = '0000000-00.2024.8.26.0100';
+  const mask = '0000000-00.2024.8.26.0100';
+
+  const communications = [
+    { id: 999991, hash: 'test-hash-001', communicationType: 'Intimação', content: 'Fica intimada a parte autora para ciência da decisão proferida nos autos. O feito encontra-se em fase de cumprimento de sentença.', availableAt: new Date('2025-01-05') },
+    { id: 999992, hash: 'test-hash-002', communicationType: 'Intimação', content: 'Certifico que a sentença proferida nos presentes autos transitou em julgado em 05/01/2025, tendo em vista o decurso do prazo recursal sem manifestação das partes. Nada mais havendo, arquivem-se os autos.', availableAt: new Date('2025-01-08') },
+    { id: 999993, hash: 'test-hash-003', communicationType: 'Citação', content: 'Fica o réu citado para, querendo, contestar a ação no prazo de 15 dias úteis, sob pena de revelia.', availableAt: new Date('2025-01-10') },
+    { id: 999994, hash: 'test-hash-004', communicationType: 'Intimação', content: 'Intime-se a parte ré para apresentar contrarrazões ao recurso interposto no prazo legal de 15 dias úteis.', availableAt: new Date('2025-01-12') },
+    { id: 999995, hash: 'test-hash-005', communicationType: 'Notificação', content: 'Notifica-se a parte autora para complementar a documentação juntada aos autos, no prazo de 10 dias, sob pena de indeferimento.', availableAt: new Date('2025-01-14') },
+    { id: 999996, hash: 'test-hash-006', communicationType: 'Intimação', content: 'Fica intimado o advogado para retirar os autos em carga pelo prazo de 5 dias para fins de vista.', availableAt: new Date('2025-01-15') },
+    { id: 999997, hash: 'test-hash-007', communicationType: 'Intimação', content: 'Intime-se para ciência da decisão que deferiu o pedido de tutela antecipada. Cumpra-se imediatamente.', availableAt: new Date('2025-01-17') },
+    { id: 999998, hash: 'test-hash-008', communicationType: 'Citação', content: 'Cite-se o litisconsorte passivo necessário para integrar o polo passivo da demanda, no prazo de 15 dias úteis.', availableAt: new Date('2025-01-19') },
+  ].map((c) => ({
+    ...c,
+    courtAcronym: 'TJSP',
+    organName: 'Vara Cível Central',
+    documentType: null,
+    className: 'Procedimento Comum',
+    processNumber,
+    processNumberMask: mask,
+    medium: 'Diário de Justiça Eletrônico',
+    mediumFull: 'Diário de Justiça Eletrônico Nacional',
+    link: null,
+    status: 'disponivel',
+  }));
+
+  const recipients = [
+    { name: 'Amélia Mascarenhas Macedo', isLawyer: false, pole: 'ativo' },
+    { name: 'Paula Silva Santos', isLawyer: true, oabNumber: '123456', oabState: 'SP' },
+    { name: 'Lavínia de Jesus', isLawyer: false, pole: 'passivo' },
+  ];
+
+  for (const comm of communications) {
+    await prisma.communication.upsert({
+      where: { hash: comm.hash },
+      create: {
+        ...comm,
+        recipients: { create: recipients },
+      },
+      update: {},
+    });
+  }
+
+  console.log('Test process seeded: 8 communications, includes "transitou em julgado"');
+}
+
 async function main() {
   console.log('Starting seed: fetching last 20 days of communications...');
 
   let totalSaved = 0;
-  const today = new Date();
+  const today = new Date('2025-01-20');
 
   for (let i = 1; i <= 20; i++) {
     const date = new Date(today);
@@ -151,6 +201,7 @@ async function main() {
   }
 
   console.log(`\nSeed complete: ${totalSaved} total communications saved.`);
+  await seedTestProcess();
 }
 
 main()
