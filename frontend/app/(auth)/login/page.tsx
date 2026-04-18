@@ -63,7 +63,7 @@ export default function LoginPage() {
 			</div>
 
 			{/* Lado direito — formulário */}
-			<div className="flex flex-1 items-center justify-center">
+			<div className="flex flex-1 flex-col items-center justify-center gap-4">
 				<div className="w-[460px] rounded-xl border border-gray-300 p-6 flex flex-col gap-2">
 					<h1 className="text-3xl font-bold text-[#262626]  text-center">
 						Bem-vindo de volta
@@ -148,6 +148,9 @@ export default function LoginPage() {
 						</p>
 					</form>
 				</div>
+				<p className="text-xs text-[#6D6D6E] text-center">
+					© 2026 • Juscash Administração de Pagamentos e Recebimentos SA
+				</p>
 			</div>
 		</div>
 	);
