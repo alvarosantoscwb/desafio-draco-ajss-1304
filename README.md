@@ -24,7 +24,7 @@ Aplicação fullstack que consome a API pública do **PJE (Diário de Justiça E
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/seu-usuario/desafio-draco-ajss-1304.git
+git clone https://github.com/alvarosantoscwb/desafio-draco-ajss-1304.git
 cd desafio-draco-ajss-1304
 
 # 2. Configure as variáveis de ambiente
